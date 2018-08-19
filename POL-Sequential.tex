@@ -1,0 +1,880 @@
+\documentclass[muchmore,11pt]{article}%
+\usepackage{amssymb}
+\usepackage{amsfonts}
+\usepackage{graphicx}
+\usepackage{amsmath}
+\usepackage{named}
+\usepackage{flexcite}
+\usepackage{zeros}
+\usepackage{comment}
+\usepackage{litprog}%
+\setcounter{MaxMatrixCols}{30}
+%TCIDATA{OutputFilter=latex2.dll}
+%TCIDATA{Version=5.50.0.2960}
+%TCIDATA{CSTFile=Literate Programming Article.cst}
+%TCIDATA{Created=Friday, December 17, 2004 15:26:57}
+%TCIDATA{LastRevised=Thursday, August 11, 2016 17:29:52}
+%TCIDATA{<META NAME="GraphicsSave" CONTENT="32">}
+%TCIDATA{<META NAME="SaveForMode" CONTENT="1">}
+%TCIDATA{BibliographyScheme=BibTeX}
+%TCIDATA{<META NAME="DocumentShell" CONTENT="Articles\Literate Programming Article">}
+%TCIDATA{Language=American English}
+%BeginMSIPreambleData
+\providecommand{\U}[1]{\protect\rule{.1in}{.1in}}
+%EndMSIPreambleData
+\newtheorem{theorem}{Theorem}
+\newtheorem{acknowledgement}[theorem]{Acknowledgement}
+\newtheorem{algorithm}[theorem]{Algorithm}
+\newtheorem{axiom}[theorem]{Axiom}
+\newtheorem{case}[theorem]{Case}
+\newtheorem{claim}[theorem]{Claim}
+\newtheorem{conclusion}[theorem]{Conclusion}
+\newtheorem{condition}[theorem]{Condition}
+\newtheorem{conjecture}[theorem]{Conjecture}
+\newtheorem{corollary}[theorem]{Corollary}
+\newtheorem{criterion}[theorem]{Criterion}
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{example}[theorem]{Example}
+\newtheorem{exercise}[theorem]{Exercise}
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{notation}[theorem]{Notation}
+\newtheorem{problem}[theorem]{Problem}
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{remark}[theorem]{Remark}
+\newtheorem{solution}[theorem]{Solution}
+\newtheorem{summary}[theorem]{Summary}
+\newenvironment{proof}[1][Proof]{\textbf{#1.} }{\ \rule{0.5em}{0.5em}}
+\begin{document}
+
+\title{Proof-Outline Logic.\\(Sequential Programming Edition)}
+\author{Theodore S\ Norvell\\Electrical and Computer Engineering\\Memorial University}
+\date{Draft typeset
+%TCIMACRO{\TeXButton{Today}{\today}}%
+%BeginExpansion
+\today
+%EndExpansion
+}
+\maketitle
+
+\begin{abstract}
+An introduction to proof outlines and Hoare logic.
+
+\end{abstract}
+
+\textbf{Note on editions:}\ This is the Sequential Programming edition,
+designed to support MUN course Engi-6892 Algorithms:\ Correctness and
+Complexity.\ There is also a Concurrent Programming edition, which contains
+additional sections on concurrent programming. The Concurrent Programming
+edition uses a somewhat different notation ---one that better matches Andrew's
+text book. \cite{Andrews2000}.
+
+\section{Preface}
+
+This note provides background on assertions and the use of assertions in
+designing correct programs.
+
+The ideas presented are mainly due, for the sequential programming part, to
+Floyd \cite{Floyd670} and Hoare \cite{Hoare690}. Blikle \cite{Blikle1979}
+presented an early version of proof-outline logic.
+
+Sections \ref{assertions} and \ref{seq} deal with sequential programming. As
+such they are an elaboration of Hoare's excellent `Axiomatic basis' paper
+\cite{Hoare690}. I\ suggest reading Hoare's paper first. For sequential
+programs, proof-outline logic is just like Hoare logic except that commands
+contain internal assertions.
+
+\section{Assertions and logic\label{assertions}}
+
+\subsection{Conditions and assertions}
+
+A \textbf{condition} is a boolean expression with free variables chosen from
+the state variables of a program. For example if we have variables
+
+\begin{code}
+int x ;
+
+int y ;
+\end{code}
+
+Then the following are all examples of conditions%
+\begin{align*}
+x  &  <y\\
+x  &  =y\\
+x+y  &  =0\\
+x  &  \geq0\\
+x  &  \geq0\wedge x+y=0\qquad\text{.}%
+\end{align*}
+
+
+A condition that is expected to be true every time execution passes a
+particular point in a program is called an \textbf{assertion}. In this course,
+assertions are preceded by \#\# and are followed by an end-of-line like
+this:\footnote{This fragment uses both the symbol $:=$ and $=$.This is one of
+those \textquotedblleft notational improvements\textquotedblright%
+\ I\ mentioned. I will use $:=$ for assignment and either $=$ or $==$ for
+equality when writing pseudo-code. In C, C++, and Java, $=$ is used for
+assignment and $==$ for equality. Andrews follows the C/C++/Java convention.
+If you want to be on the safe side of any possible misunderstanding, you can
+use $:=$ for assignment and $==$ for equality.}
+
+\begin{code}
+int x ;
+
+int y ;
+
+x := 5 ;
+
+y := -5 ;
+
+\#\#\ $x\geq0\wedge x+y=0$
+
+z := x+z ;
+\end{code}
+
+Sometimes I'll write assertions inside curly brackets like this:
+
+\begin{code}
+int x ; int y ; x := 5 ; y := -5 ; $\left\{  x\geq0\wedge x+y=0\right\}  $ z
+:= x+y ;
+\end{code}
+
+\subsection{Assertions in C, C++, and Java}
+
+If one is programming in C or C++, then assertions may be written either as
+comments or using the assert macro from the standard C\ library. E.g.
+
+\begin{code}
+\#include
+%TCIMACRO{\TEXTsymbol{<}}%
+%BeginExpansion
+$<$%
+%EndExpansion
+assert.h%
+%TCIMACRO{\TEXTsymbol{>}}%
+%BeginExpansion
+$>$%
+%EndExpansion
+
+
+...
+
+\textbf{int} x ;
+
+\textbf{int} y ;
+
+x = 5 ;
+
+y = -5 ;
+
+assert(\ x
+%TCIMACRO{\TEXTsymbol{>}}%
+%BeginExpansion
+$>$%
+%EndExpansion
+=0 \&\&\ x+y == 0 )\ ;
+\end{code}
+
+\noindent Assertions written using the \textsf{assert} macro will be evaluated
+at run time and the program will come to a grinding halt, should the assertion
+ever evaluate to false.\footnote{By using a different include file, one can,
+of course, make the action followed on a false assertion be whatever you like.
+For example, in a desktop application, one might cause all files to be saved
+and an error report to be assembled and e-mailed back to the developers; in an
+embedded system, one might cause the system to go into safe mode. If you
+program in C or C++, I\ strongly suggest redefining the assert macro in a way
+that suits your application. And use it!}
+
+In Java one easily create one's own \textsf{Assert} class with a
+\textsf{check} method in it.\footnote{As of Java 1.4, there is actually an
+\textsf{assert} keyword in Java. However I don't recommend its use. Assertion
+checking is turned off by default in most (if not all) JVMs. This can be
+compared to removing the seat belts from a car's design once it goes into
+production. In my own work I use my own assertion checking class. I\ recommend
+you do the same.}
+
+\begin{code}
+\textbf{public} \textbf{class} Assert \{
+
+\begin{indent}
+\item \textbf{public static void} check( \textbf{boolean} b ) \{
+
+\begin{indent}
+\item if( !b ) \{ \textbf{throw} \textbf{new} java.lang.AssertionError() ; \}
+\end{indent}
+
+\item \}
+\end{indent}
+
+\}
+\end{code}
+
+\noindent This can be used in your code as follows:
+
+\begin{code}
+\textbf{int} x ;
+
+\textbf{int} y ;
+
+x = 5 ;
+
+y = -5 ;
+
+Assert.check(\ x
+%TCIMACRO{\TEXTsymbol{>}}%
+%BeginExpansion
+$>$%
+%EndExpansion
+=0 \&\&\ x+y == 0 )\ ;
+\end{code}
+
+\subsubsection{Be an assertive programmer}
+
+Using assertions has several benefits.
+
+\begin{itemize}
+\item In the design process, they help you articulate what conditions you
+expect to be true at various points in program execution.
+
+\item In testing, executable assertions can help you identify errors in your
+code or in your design.
+
+\item In execution, executable assertions ---combined with a recovery
+mechanism--- can help make your program more fault tolerant.
+
+\item Assertions provide valuable documentation. Executable assertions are
+more valuable than comments, as they are more likely to be accurate.
+\end{itemize}
+
+Whether to code assertions as comments or as executable checks is a question
+that depends on the local conditions of the project you are working on.
+Sometimes it has to be answered on a case-by-case basis. In this course we
+will concentrate on the use of assertions in the design process, rather than
+on their (nevertheless important)\ uses in testing, documentation, and in
+making systems fault-tolerant. My general advice is to make assertions
+executable as much as is practical.\footnote{In concurrent programming there
+is an additional complication in making assertions executable, namely that
+they should be evaluated atomically. Consider the assertion%
+\[
+x=0\vee y=0
+\]
+if we evaluate this in parallel with the following sequence of assignments%
+\[
+x:=0;y:=1;
+\]
+it is possible that the assertion will evaluate to false even though there is
+no time at which it is in fact false.
+\par
+This problem can be solved by evaluating assertions only when the thread has
+exclusive access to the data they refer to.}
+
+\subsection{Substitutions}
+
+Sometimes it is useful to create a new condition by replacing all free
+occurrences of a variable $x$ in a condition $P$ by an expression $(E)$. We
+write $P[x:E]$ for the new condition.\footnote{A variety of notations are used
+by authors for substitutions. I\ like this one because it doesn't use
+subscripts or superscripts.} For example%
+\[%
+\begin{tabular}
+[c]{lll}%
+$\left(  x\geq0\wedge x+y=0\right)  [x:z]$ & is & $\left(  z\right)
+\geq0\wedge\left(  z\right)  +y=0$\\
+$\left(  x\geq0\wedge x+y=0\right)  [x:x+y]$ & is & $\left(  x+y\right)
+\geq0\wedge\left(  x+y\right)  +y=0$\\
+$\left(  2y=5\right)  [y:y+z]$ & is & $2(y+z)=5\qquad\text{.}$%
+\end{tabular}
+\ \ \ \ \ \ \ \ \
+\]
+It is useful to extend this notation to allow simultaneous substitution for
+more than one variable. For example%
+\[
+\left(  x\geq0\wedge x+y=0\right)  [x,y:z,x]\text{ is }\left(  z\right)
+\geq0\wedge\left(  z\right)  +\left(  x\right)  =0
+\]
+Usually we omit the parentheses in contexts where they are not required.
+
+\subsection{Propositional and predicate logic}
+
+In this section, I will review a little bit of propositional and predicate
+logic. We use notations $\lnot$ (not), $=$ (equality), $\wedge$ (and), $\vee$,
+(or), and $\Rightarrow$ (implication). Precedence between the operators is in
+the same order. Some of the laws of propositional logic that will be useful
+are%
+\[%
+\begin{tabular}
+[c]{ll}%
+$\left(  P\Rightarrow Q\right)  =\left(  \lnot P\vee Q\right)  $ & Material
+implication\\
+$\left(  \mathit{true}\Rightarrow P\right)  =P$ & Identity\\
+$\mathit{false}\Rightarrow P$ & Antidomination\\
+$P\Rightarrow P$ & Reflexivity\\
+$P\Rightarrow\mathit{true}$ & Domination\\
+$\left(  P\Rightarrow(Q\Rightarrow R)\right)  =\left(  P\wedge Q\Rightarrow
+R\right)  $ & Shunting\\
+$\left(  P0\Rightarrow Q\right)  \Rightarrow\left(  P0\wedge P1\Rightarrow
+Q\right)  $ & Subsetting the antecedent\\
+$\left(  P\Rightarrow Q\wedge R\right)  =\left(  P\Rightarrow Q\right)
+\wedge\left(  P\Rightarrow R\right)  $ & Distributivity
+\end{tabular}
+\ \ \ \
+\]
+
+
+Also frequently useful are the \textbf{one-point laws}, which let you make use
+of information from equalities. $E$ and $F$ range over expressions of any
+type, $v$ is a variable of that same type.
+\begin{align*}
+\left(  E=F\Rightarrow P[v:E]\right)   &  =\left(  E=F\Rightarrow
+P[v:F]\right) \\
+\left(  E=F\wedge P[v:E]\right)   &  =\left(  E=F\wedge P[v:F]\right)
+\end{align*}
+To see that these are true, consider the case where $E=F$ and then the case
+where $E\neq F$.
+
+For example%
+\[
+x=X\wedge y=Y\Rightarrow x^{y}=X^{Y}%
+\]
+simplifies, using one-point (and shunting), to%
+\[
+x=X\wedge y=Y\Rightarrow X^{Y}=X^{Y}%
+\]
+which then simplifies to%
+\[
+x=X\wedge y=Y\Rightarrow\mathit{true}%
+\]
+which is then true.
+
+Any condition that is true for all assignments of values to its free
+variables, is called a \textbf{universally true} formula. For example,
+(assuming $x$ and $y$ and $z$ are integer variables) the following are all
+universally true%
+\begin{align*}
+&  \left.  2+2=4\right. \\
+&  \left.  x<y\wedge y<z\Rightarrow x<z\right. \\
+&  \left.  x+1>x\right.
+\end{align*}
+However, $x^{2}+y^{2}=z^{2}$ is not universally true, because there is an
+assignment for which it is not true; for example $3^{2}+4^{2}=6^{2}$ is not true.
+
+Whether a condition is universally true may depend on the types ascribed to
+its variables. For example, if we are using Java and $x$ has type
+\textbf{int}, then, by the rules of the Java language, the value of $x+1,$
+when $x$ is $2^{31}-1,$ is $-2^{31}$; so $x+1>x$ is not universally true when
+$x$ represents a Java \textbf{int} and $+$ is interpreted as Java \textbf{int} addition.
+
+\begin{comment}
+    Note that Dafny uses short circuiting three valued logic, so it might be a good idea to change POL to
+    do the same.
+\end{comment}
+
+Sometimes expressions are undefined, for example, supposing $x$ and $y$ are
+rational variables, $x/y$ is undefined when $y$ is $0$. This raises the
+question of whether $1=x/x$ is universally true. We'll say that such an
+expression is not universally true. However, the expression $x\neq
+0\Rightarrow1=x/x$ is universally true; if we consider the case of $x=0$ , we
+have $\mathrm{false}\Rightarrow?$, and applying the principle of
+antidomination, this is $\mathrm{true}$. Using $?$ to represent an unknown or
+undefined truth value, we can fill in truth tables for the propositional logic
+as follows%
+\begin{align*}
+&
+\begin{tabular}
+[c]{|l||l|}\hline
+$\lnot$ & \\\hline\hline
+false & true\\\hline
+? & ?\\\hline
+true & false\\\hline
+\end{tabular}
+\ \qquad%
+\begin{tabular}
+[c]{|l||l|l|l|}\hline
+$\wedge$ & false & ? & true\\\hline\hline
+false & false & false & false\\\hline
+? & false & ? & ?\\\hline
+true & false & ? & true\\\hline
+\end{tabular}
+\\
+&
+\begin{tabular}
+[c]{|l||l|l|l|}\hline
+$\vee$ & false & ? & true\\\hline\hline
+false & false & ? & true\\\hline
+? & ? & ? & true\\\hline
+true & true & true & true\\\hline
+\end{tabular}
+\ \qquad%
+\begin{tabular}
+[c]{|l||l|l|l|}\hline
+$\Rightarrow$ & false & ? & true\\\hline\hline
+false & true & true & true\\\hline
+? & ? & ? & true\\\hline
+true & false & ? & true\\\hline
+\end{tabular}
+\end{align*}
+
+
+\section{Sequential programming\label{seq}}
+
+\subsection{Contracts}
+
+A specification for a component indicates the operating conditions (i.e. the
+conditions under which the component is expected to operate) and the function
+of the component (i.e. the relationship between the component's inputs and
+outputs). For example we might specify a resistor by saying that the
+relationship between the voltage and current across the resistor is given by%
+\[
+953I\leq V\leq1050I\qquad\text{,}%
+\]
+provided%
+\[
+0\leq V\leq+10\qquad\text{.}%
+\]
+The latter formula gives the operating conditions, the former the relation
+between inputs and outputs.
+
+In programming, we can use a pair of assertions as a specification or
+\textquotedblleft contract\textquotedblright\ for a command or subroutine. The
+first assertion is the so-called precondition, it specifies the operating
+conditions, that is, the state of the program when the command begins
+operation. The second assertion specifies the state of the program when (and
+if) the command ends operation. For example, the following pair of conditions
+specifies a command that results in $x$ being assigned the value 5, provided
+that $y$ is initially $4$%
+\[
+\lbrack y=4,x=5]\qquad\text{,}%
+\]
+where $x$ and $y$ are understood to be state variables of type \textsf{int}.
+One solution to this particular contract is
+
+\begin{code}
+$\left\{  y=4\right\}  $
+
+$x:=y+1$
+
+$\left\{  x=5\right\}  \qquad$.
+\end{code}
+
+\noindent Such a triple, consisting of a precondition, a command, and a
+postcondition, is called a \textbf{Hoare triple} after C.A.R. Hoare, who
+introduced the idea to programming. Here is another solution:
+
+\begin{code}
+$\left\{  y=4\right\}  $
+
+$x:=5$ ;
+
+$\left\{  x=5\right\}  \qquad$.
+\end{code}
+
+\noindent Here is one more:
+
+\begin{code}
+$\left\{  y=4\right\}  $
+
+$y:=y+1$ ;
+
+$x:=y$ ;
+
+$\left\{  x=5\right\}  \qquad$.
+\end{code}
+
+\noindent Nothing in the contract says that $y$ must not change!
+
+If you do want to specify that a variable does not change, then `constants'
+can be used. Constants are conventionally written with capital letters. The
+following contract specifies that, provided $y$ is initially less than 100,
+$y$ must not change and the final value of $x$ must be larger than that of
+$y$:%
+\[
+\lbrack y<\mathrm{100}\wedge y=Y,y=Y\wedge x>y]
+\]
+where it is understood that $x$ and $y$ are state variables of type
+\textsf{int},\textsf{ }while $Y$ is a constant\footnote{The word `constant' is
+the traditional term to use. In the mathematical sense, $Y$ is a variable. We
+use the term `constant' to distinguish such mathematical variables from
+\textquotedblleft program variables\textquotedblright\ which refer to
+components of the program state. The point is that $Y\ $can't be changed by
+the execution of the program so $Y$ represents the same value in both the
+precondition and in the postcondition. Since the precondition implies $y=Y$
+and the postcondition implies $y=Y$, it is clear that $y$ has the same value
+in the final state as it has in the initial state.
+\par
+It is so common to use constants equated to the initial values of variables
+that the following convention has evolved. The notation $e_{o}$ is used to
+refer to the value of expression $e$ in the original state. Thus this contract
+could be written as%
+\[
+\left[  y<100,y=y_{o}\wedge x>y\right]
+\]
+} of type \textsf{int}.
+
+\subsection{Partial correctness}
+
+Consider a Hoare triple $\{P\}\;S\;\{Q\}$. We define that the triple is
+\textbf{partially correct} if and only if, for all possible values of all
+constants, whenever the execution of $S$ is started in a state satisfying $P$,
+the execution of $S$ does not crash and can only end in a state satisfying $Q$.
+
+Note that the definition of partial correctness does not require that $S$
+should terminate. Thus the following triple is partially correct even if we
+interpret $x$ to have the type $\mathbb{Z}$, that is, to range over all
+mathematical integers%
+\[
+\{\mathrm{true}\}\quad\mathbf{while}\;x\neq0\;\mathbf{do}%
+\ x:=x-1\;\mathbf{end\;while}\quad\{x=0\}\qquad\text{.}%
+\]
+If we consider initial states where $x$ is positive or zero, then eventually
+the while-loop will terminate and the program will halt in a state where
+$x=0$, satisfying the postcondition. If we start the while-loop in an initial
+state where $x$ is negative, then the while-loop will never terminate and so
+execution \textquotedblleft can only end in a state
+satisfying\textquotedblright\ the postcondition by virtue of the fact it never
+ends at all!
+
+We write $\vdash\{P\}\;S\;\{Q\}$ to mean \textquotedblleft$\{P\}\;S\;\{Q\}$ is
+partially correct\textquotedblright
+
+In concurrent programming, we are often interested in processes that do not
+terminate (e.g., in embedded systems) so dealing with partial correctness is
+an appropriate and desirable thing to do. If termination is important, we can
+deal with it as a separate concern. From here on, we won't be worried about
+any other kind of correctness, so we will just say \textquotedblleft
+correct\textquotedblright.
+
+\subsection{Some examples of assignments and a rule}
+
+Here are some small examples of Hoare triples. In each case the variables
+should be understood to be integers%
+
+\[
+\{x+1=y\}\;x:=x+1\;\{x=y\}
+\]
+Is this triple correct?\ (Answer for yourself before reading on...) If
+initially $y$ is $x+1$ and we change $x$ to $x+1$, then finally both $x$ and
+$y$ will equal the original value of $x+1$, and so they will equal each other.
+Yes, it is correct.
+
+How about%
+\[
+\{2x=3y\}\;x:=2x\;\{x=3y\}
+\]
+Is this correct? Well, if initially $2x$ is $3y$, then, after changing $x$ to
+$2x$, finally $x$ will be $3y$.
+
+These two examples suggest a general rule, which is%
+\[
+\vdash\left\{  Q[x:E]\right\}  \;x:=E\;\left\{  Q\right\}
+\]
+When $Q$ is the postcondition of an assignment $x:=E$, we call $Q[x:E]$ the
+\textbf{substituted postcondition}. More generally, it is sufficient\ for the
+precondition to imply $Q[x:E]$, so a better rule is%
+\[
+\vdash\left\{  P\right\}  \;v:=E\;\left\{  Q\right\}  \text{ exactly if
+}P\Rightarrow Q[v:E]\text{ is universally true,}%
+\]
+where $v$ is any variable, $E$ is any expression, and $P$ and $Q$ are any
+conditions. Here is an example where the precondition is stronger than it
+needs to be:%
+\[
+\left\{  2x<3y\right\}  \;x:=2x\;\left\{  x\leq3y\right\}
+\]
+The substituted postcondition is $(x\leq3y)[x:2x]$, which is $2x\leq3y$. By
+the assignment rule, this triple is correct exactly if $2x<3y\Rightarrow
+2x\leq3x$ is universally true.
+
+There is one more aspect to assignment that should be mentioned. This is that
+the expression might not always be well defined. For example, if we divide by
+$0$, this is an error and we should consider that if this happens the program
+has crashed. Since a command that crashes is not partially correct we should
+really ensure that our rule for assignments includes checking that the
+expression is well defined. Let's suppose that for each expression $E$ there
+is a condition $\mathrm{df}[E]$ that says that $E$ is well-defined, i.e. does
+not crash when evaluated. For example $\mathrm{df}[x/y]$ might be $y\neq0$.
+Now the improved assignment rule is
+\begin{equation}%
+\begin{tabular}
+[c]{ll}%
+$\vdash\left\{  P\right\}  \;v:=E\;\left\{  Q\right\}  $ & $\text{exactly if
+}P\Rightarrow Q[v:E]\text{ is universally true}$\\
+& $\text{and }P\Rightarrow\mathrm{df}[E]\text{ is universally true}$%
+\end{tabular}
+\ \text{ }\tag{assignment rule}%
+\end{equation}
+In many cases $\mathrm{df}[E]$ is simply $\mathrm{true}$, and so it is trivial
+that $P\Rightarrow\mathrm{df}[E]$ is universally true.
+
+This rule generalizes to simultaneous assignments to multiple variables. For
+example%
+\[
+\left\{  x<y\right\}  \;x,y:=y,x\;\left\{  y\leq x\right\}
+\]
+The substituted postcondition is $\left(  y\leq x\right)  [x,y:y,x]$, which is
+$x\leq y$; this is implied (for all values of $x$ and $y$) by $x<y$.
+
+Here is one last example of an assignment; it will be of use later.%
+\[
+\left\{  y\geq0\wedge x=X\wedge y=Y\right\}  \;z:=1\;\left\{  y\geq0\wedge
+X^{Y}=z\times x^{y}\right\}
+\]
+First we find the substituted postcondition%
+\[
+y\geq0\wedge X^{Y}=1\times x^{y}%
+\]
+which simplifies to
+\[
+y\geq0\wedge X^{Y}=x^{y}%
+\]
+This (using one-point laws) is implied by the precondition $y\geq0\wedge
+x=X\wedge y=Y$.
+
+\subsection{A bigger example}
+
+Here is another example. I claim that
+\begin{equation}
+\left\{  y\geq0\wedge x=X\wedge y=Y\right\}  \;S\;\left\{  z=X^{Y}\right\}
+\qquad\text{,} \label{a}%
+\end{equation}
+is correct, where
+\begin{align*}
+S  &  \triangleq\left(  z:=1;\mathbf{while(}\;y>0\;)\;T\right) \\
+T  &  \triangleq\mathbf{if}\;\mathit{\mathrm{odd}}(y)\;\mathbf{then}%
+\;U\;\mathbf{else}\;V\;\mathbf{end\;if}\\
+U  &  \triangleq(z:=z\times x;y:=y-1;)\\
+V  &  \triangleq(x:=x\times x;y:=y/2;)\qquad\text{.}%
+\end{align*}
+
+
+To show that this triple is correct, we'll need to deal with constructs other
+than assignments. For that we introduce a new idea:\ proof outlines.
+
+\subsection{Proof outlines}%
+
+%TCIMACRO{\TeXButton{B Fig}{\begin{figure}[tb]}}%
+%BeginExpansion
+\begin{figure}[tb]%
+%EndExpansion
+
+
+\begin{code}
+$\left\{  y\geq0\wedge x=X\wedge y=Y\right\}  $
+
+$z:=1$ ;
+
+$\left\{  y\geq0\wedge X^{Y}=z\times x^{y}\right\}  $
+
+\textbf{while}\ $y>0$ \textbf{do}
+
+\begin{indent}
+\item $\left\{  X^{Y}=z\times x^{y}\wedge y>0\right\}  $
+
+\item \textbf{if}\ \textrm{$odd$}$(y)$ \textbf{then}
+
+\begin{indent}
+\item $\left\{  X^{Y}=z\times x^{y}\wedge y>0\wedge\mathrm{odd}(y)\right\}  $
+
+\item $z:=z\times y$
+
+\item $\left\{  y-1\geq0\wedge X^{Y}=z\times x^{y-1}\right\}  $
+
+\item $y:=y-1$
+\end{indent}
+
+\item \textbf{else}
+
+\begin{indent}
+\item $\left\{  X^{Y}=z\times x^{y}\wedge y>0\wedge\mathrm{even}(y)\right\}  $
+
+\item $x:=x\times x$
+
+\item $\left\{  \mathrm{even}(y)\wedge y/2\geq0\wedge X^{Y}=z\times
+x^{y/2}\right\}  $
+
+\item $y:=y/2$
+\end{indent}
+
+\item \textbf{end if}
+\end{indent}
+
+\thinspace\textbf{end\ while}
+
+$\left\{  z=X^{Y}\right\}  $
+\end{code}
+
+%
+
+%TCIMACRO{\TeXButton{E Fig}{\caption{An example proof outline.}\label
+%{po}\end{figure}}}%
+%BeginExpansion
+\caption{An example proof outline.}\label{po}\end{figure}%
+%EndExpansion
+
+
+A \textbf{proof outline} is a command that is annotated with assertions. It
+represents the outline of a proof of the program. Figure \ref{po} is a proof
+outline for the example of the last section.
+
+A proof outline is not a proof: it is (if correct)\ a summary of a proof. This
+is why it is called a `proof outline'.
+
+\subsection{Correctness of proof outlines}
+
+We can formally define \textbf{partially correct} proof outlines for
+sequential programs as follows:
+
+\textbf{Assignment Rule:} $\left\{  P\right\}  \;v:=E\;\left\{  Q\right\}  $
+is a partially correct proof outline if
+\[
+P\Rightarrow Q[v:E]\text{ is universally true and }P\Rightarrow\mathrm{df}%
+[E]\text{ is universally true\qquad.}%
+\]
+
+
+\textbf{Skip Rule:} $\left\{  P\right\}  \;\mathbf{skip}\;\left\{  Q\right\}
+$ is a partially correct proof outline if%
+\[
+P\Rightarrow Q\text{ is universally true\qquad.}%
+\]
+
+
+\textbf{(Sequential) Composition Rule:} $\left\{  P\right\}  \;S\;\left\{
+Q\right\}  \;T\;\left\{  R\right\}  $ is a partially correct proof outline, provided
+
+\begin{itemize}
+\item that $\left\{  P\right\}  \;S\;\left\{  Q\right\}  $ is a partially
+correct proof outline, and
+
+\item that $\left\{  Q\right\}  \;T\;\left\{  R\right\}  $ is a partially
+correct proof outline.
+\end{itemize}
+
+\textbf{2-Tailed If Rule}: $\left\{  P\right\}  \;\mathbf{if(}\;E\;)\;\{Q_{0}%
+\}\ S\;\mathbf{else}\;\{Q_{1}\}\;T\;\left\{  R\right\}  $ is a partially
+correct proof outline, provided
+
+\begin{itemize}
+\item that $\{Q_{0}\}\;S\;\{R\}$ is a partially correct proof outline,
+
+\item that $\{Q_{1}\}\;T\;\{R\}$ is a partially correct proof outline,
+
+\item that $P\Rightarrow\mathrm{df}[E]$ is universally true,
+
+\item that $P\wedge E\Rightarrow Q_{0}$ is universally true, and
+
+\item that $P\wedge\lnot E\Rightarrow Q_{1}$ is universally true.
+\end{itemize}
+
+\textbf{1-Tailed If Rule:} $\left\{  P\right\}  \;\mathbf{if(}%
+\;E\;)\;\{Q\}\;S\;\left\{  R\right\}  $ is a partially correct proof outline, provided
+
+\begin{itemize}
+\item that $\{Q\}\;S\;\{R\}$ is a partially correct proof outline,
+
+\item that $P\Rightarrow\mathrm{df}[E]$ is universally true,
+
+\item that $P\wedge E\Rightarrow Q$ is universally true, and
+
+\item that $P\wedge\lnot E\Rightarrow R$ is universally true.
+\end{itemize}
+
+\textbf{Iteration Rule:} $\left\{  P\right\}  \;\mathbf{while(}%
+\;E\;)\;\{Q\}\;S\;\left\{  R\right\}  $ is a partially correct proof outline, provided
+
+\begin{itemize}
+\item that $P\Rightarrow\mathrm{df}[E]$ is universally true,
+
+\item that $P\wedge E\Rightarrow Q$ is universally true,
+
+\item that $P\wedge\lnot E\Rightarrow R$ is universally true, and
+
+\item that $\{Q\}\;S\;\{P\}$ is a partially correct proof outline.
+\end{itemize}
+
+By the way, the loop's precondition, $P$, is called an \textbf{invariant} of
+the loop. Loop invariants are crucial in designing and documenting loops. Note
+that, provided it is true when the while command starts, the invariant will be
+true at the start of each iteration and when the loop terminates. Loop
+invariants allow us to analyze the effect of a loop by considering only the
+effect of a single iteration.
+
+From here on we will write \textquotedblleft\textbf{correct}\textquotedblright%
+\ in place of \textquotedblleft partially correct\textquotedblright, as we
+won't be concerned with any other sort of correctness.
+
+In a proof outline, all commands will be preceded by an assertion. This is its
+\textbf{precondition}. In the example, the precondition of $y:=y/2;$ is
+\[
+\mathrm{even}(y)\wedge y/2\geq0\wedge X^{Y}=z\times x^{y/2}%
+\]
+and the precondition of $x:=x\times x;$ is%
+\[
+X^{Y}=z\times x^{y}\wedge y>0\wedge\mathrm{even}(y)\text{\qquad.}%
+\]
+
+
+Suppose $\{P\}\;S$\ $\{Q\}$ is a correct proof outline. Let $\widehat{S}$ be
+formed by deleting all assertions from $S$ or by treating them as comments.
+Now $\{P\}\;\widehat{S}\;\{Q\}$ is a correct Hoare triple.
+
+\subsection{Correctness of the example}
+
+There is a little, but not much, work left to show that the example proof
+outline in Figure \ref{po} is correct. First a recall that\ a boolean formula
+is said to be universally true if it evaluates to true regardless of the
+values chosen for its free variables (including our so-called constants).
+
+Let's call the loop invariant $I$.%
+\[
+I\triangleq y\geq0\wedge X^{Y}=z\times x^{y}%
+\]
+
+
+\begin{itemize}
+\item Because of the first assignment, we must show%
+\[
+y\geq0\wedge x=X\wedge y=Y\Rightarrow I[z:1]
+\]
+is universally true. After substitution we have%
+\[
+y\geq0\wedge x=X\wedge y=Y\Rightarrow y\geq0\wedge X^{Y}=1\times x^{y}%
+\]
+which (using a one-point law) we can easily see is universally true.
+
+\item From the rule for while-loops, we must show%
+\begin{align*}
+&  I\wedge y>0\Rightarrow X^{Y}=z\times x^{y}\wedge y>0\\
+&  I\wedge\lnot\left(  y>0\right)  \Rightarrow z=X^{Y}%
+\end{align*}
+are each universally true. Both are fairly straight-forward
+
+\item From the rule for 2-tailed if commands, we must show%
+\begin{align*}
+X^{Y}  &  =z\times x^{y}\wedge y>0\wedge\mathrm{odd}(y)\Rightarrow
+X^{Y}=z\times x^{y}\wedge y>0\wedge\mathrm{odd}(y)\text{ and}\\
+X^{Y}  &  =z\times x^{y}\wedge y>0\wedge\lnot\mathrm{odd}(y)\Rightarrow
+X^{Y}=z\times x^{y}\wedge y>0\wedge\mathrm{even}(y)
+\end{align*}
+are each universally true. Both are trivial.
+
+\item The four assignments in the loop body give rise to four expressions that
+should be shown to be universally true:%
+\begin{align*}
+&  \left.  X^{Y}=z\times x^{y}\wedge y>0\wedge\mathrm{odd}(y)\right.
+\Rightarrow\left(  y-1\geq0\wedge X^{Y}=z\times x^{y-1}\right)  [z:z\times
+y]\\
+&  \left.  y-1\geq0\wedge X^{Y}=z\times x^{y-1}\right.  \Rightarrow I[y:y-1]\\
+&  \left.  X^{Y}=z\times x^{y}\wedge y>0\wedge\mathrm{even}(y)\right.
+\Rightarrow\left(  \mathrm{even}(y)\wedge y/2\geq0\wedge X^{Y}=z\times
+x^{y/2}\right)  [x:x\times x]\\
+&  \left.  \mathrm{even}(y)\wedge y/2\geq0\wedge X^{Y}=z\times x^{y/2}\right.
+\Rightarrow I[y:y/2]
+\end{align*}
+
+\end{itemize}
+
+\bibliographystyle{named}
+\bibliography{big}
+
+
+
+\end{document}
