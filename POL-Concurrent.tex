@@ -421,50 +421,51 @@ $x$ represents a Java \textbf{int} and $+$ is interpreted as Java \textbf{int} a
 \end{comment}
 
 Sometimes expressions are undefined, for example, supposing $x$ and $y$ are
-rational variables, $x/y$ is undefined when $y$ is $0$, so this raises the
+rational variables, $x/y$ is undefined when $y$ is $0$. This raises the
 question of whether $1=x/x$ is universally true. We'll say that such an
-expression is not universally true. However, the expression $x\neq
-0\Rightarrow1=x/x$ is universally true; if we consider the case of $x=0$ , we
-have $\mathrm{false}\Rightarrow?$, and applying the principle of
-antidomination, this is $\mathrm{true}$. Using $?$ to represent an unknown or
+expression is not universally true because sometimes it is undefined.
+However, the expression $x\neq 0\Rightarrow1=x/x$ is universally true;
+if we consider the case of $x=0$, we
+have $\mathrm{false}\Rightarrow\;?$, and, applying the principle of
+antidomination, this is $\mathrm{true}$ whether the ? represents something true or false.
+
+We will follow the C, Java, C++ and Dafny languages by considering the Boolean operators $\wedge$, $\vee$, and $\Rightarrow$ as being undefined if (and only if) their left operand is undefined or if their left operand is defined, their right operand is undefined, and the value of the left operand does not determine a value.  Using $?$ to represent an unknown or
 undefined truth value, we can fill in truth tables for the propositional logic
 as follows%
-\begin{align*}
+\[
+\begin{tabular}[c]{ll}
+	\begin{tabular}[c]{|l||l|}\hline
+	$\lnot$ & \\\hline\hline
+	false & true\\\hline
+	? & ?\\\hline
+	true & false\\\hline
+	\end{tabular}
 &
-\begin{tabular}
-[c]{|l||l|}\hline
-$\lnot$ & \\\hline\hline
-false & true\\\hline
-? & ?\\\hline
-true & false\\\hline
-\end{tabular}
-\qquad%
-\begin{tabular}
-[c]{|l||l|l|l|}\hline
-$\wedge$ & false & ? & true\\\hline\hline
-false & false & false & false\\\hline
-? & false & ? & ?\\\hline
-true & false & ? & true\\\hline
-\end{tabular}
+	\begin{tabular}[c]{|l||l|l|l|}\hline
+	$\wedge$ & false & ?     & true\\\hline\hline
+	false    & false & false & false\\\hline
+	?        & ?     & ?     & ?\\\hline
+	true     & false & ?     & true\\\hline
+	\end{tabular}
 \\
+\\
+	\begin{tabular}[c]{|l||l|l|l|}\hline
+	$\vee$ & false & ?    & true\\\hline\hline
+	false  & ?     & ?    & true\\\hline
+	? & ?  & ?     & true\\\hline
+	true   & true  & true & true\\\hline
+	\end{tabular}
 &
-\begin{tabular}
-[c]{|l||l|l|l|}\hline
-$\vee$ & false & ? & true\\\hline\hline
-false & false & ? & true\\\hline
-? & ? & ? & true\\\hline
-true & true & true & true\\\hline
+	\begin{tabular}[c]{|l||l|l|l|}\hline
+	$\Rightarrow$ & false & ?    & true\\\hline\hline
+	false         & true  & true & true\\\hline
+	?             & ?     & ?    & ?\\\hline
+	true          & false & ?    & true\\\hline
+	\end{tabular}
 \end{tabular}
-\qquad%
-\begin{tabular}
-[c]{|l||l|l|l|}\hline
-$\Rightarrow$ & false & ? & true\\\hline\hline
-false & true & true & true\\\hline
-? & ? & ? & true\\\hline
-true & false & ? & true\\\hline
-\end{tabular}
-\end{align*}
+\]
 
+Note that, in this logic, the ``and'' and ``or'' operators are not necessarily commutative.  Before applying the commutative laws, we should convince ourselves that both operands are defined. Furthermore the identity, reflexivity, and domination laws for implication only hold when it is known that $P$ is defined.
 
 \section{Sequential programming\label{seq}}
 
@@ -2715,7 +2716,7 @@ The command $\left\langle \mathbf{await}(s=0)\;s:=1;\right\rangle $ can easily
 be implemented with the test-and-set instruction found on many computers.
 
 \bibliographystyle{named}
-\bibliography{big}
+\bibliography{pol}
 
 
 
